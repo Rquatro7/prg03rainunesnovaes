@@ -4,6 +4,7 @@
  */
 package br.com.ifba.usuario.view;
 import javax.swing.JOptionPane;
+import br.com.ifba.usuario.validar.ValidadorUsuario;
 /**
  *
  * @author rainu
@@ -225,12 +226,15 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }
     // 3. valida se as senhas coincidem
     else if (!senha.equals(confirmarSenha)) {
-        JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-    // 4. tudo certo, cadastro concluido
+    JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
+}
+// 4. valida se o login contem palavra proibida
+    else if (ValidadorUsuario.contemPalavraProibida(login)) {
+    JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
+}
     else {
-        JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
-    }
+    JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+}
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void txtLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtLoginActionPerformed
