@@ -5,6 +5,8 @@
 package br.com.ifba.usuario.view;
 import javax.swing.JOptionPane;
 import br.com.ifba.usuario.validar.ValidadorUsuario;
+import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.login.view.TelaLogin;
 /**
  *
  * @author rainu
@@ -208,7 +210,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_cbGeneroActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-        // 1. captura os dados digitados
+       // 1. captura os dados digitados
     String nome = txtNome.getText();
     String cpf = txtCpf.getText();
     String dataNascimento = txtDataNascimento.getText();
@@ -218,23 +220,34 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     String senha = new String(txtSenha.getPassword());
     String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
-    // 2. valida se algum campo esta vazio
+    // 2. instancia o objeto de dominio e preenche com os dados capturados
+    Usuario usuario = new Usuario();
+    usuario.nome = nome;
+    usuario.cpf = cpf;
+    usuario.genero = cbGenero.getSelectedItem().toString();
+    usuario.dataNascimento = dataNascimento;
+    usuario.telefone = telefone;
+    usuario.email = email;
+    usuario.login = login;
+    usuario.senha = senha;
+
+    // 3. valida se algum campo esta vazio
     if (nome.isEmpty() || cpf.isEmpty() || dataNascimento.isEmpty()
             || telefone.isEmpty() || email.isEmpty() || login.isEmpty()
             || senha.isEmpty() || confirmarSenha.isEmpty()) {
         JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    // 3. valida se as senhas coincidem
+    // 4. valida se as senhas coincidem
     else if (!senha.equals(confirmarSenha)) {
-    JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
-}
-// 4. valida se o login contem palavra proibida
+        JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+    // 5. valida se o login contem palavra proibida
     else if (ValidadorUsuario.contemPalavraProibida(login)) {
-    JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
-}
+        JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     else {
-    JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
-}
+        JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+    }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void txtLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtLoginActionPerformed
@@ -242,6 +255,8 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        TelaLogin telaLogin = new TelaLogin();
+        telaLogin.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
