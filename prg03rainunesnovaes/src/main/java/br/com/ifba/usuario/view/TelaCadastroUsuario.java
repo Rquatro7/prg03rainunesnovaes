@@ -220,16 +220,12 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     String senha = new String(txtSenha.getPassword());
     String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
-    // 2. instancia o objeto de dominio e preenche com os dados capturados
-    Usuario usuario = new Usuario();
-    usuario.nome = nome;
-    usuario.cpf = cpf;
-    usuario.genero = cbGenero.getSelectedItem().toString();
-    usuario.dataNascimento = dataNascimento;
-    usuario.telefone = telefone;
-    usuario.email = email;
-    usuario.login = login;
-    usuario.senha = senha;
+        // 2. instancia o objeto de dominio usando o construtor com parametros
+    Usuario usuario = new Usuario(nome, cpf, login, senha);
+    usuario.setGenero(cbGenero.getSelectedItem().toString());
+    usuario.setDataNascimento(dataNascimento);
+    usuario.setTelefone(telefone);
+    usuario.setEmail(email);
 
     // 3. valida se algum campo esta vazio
     if (nome.isEmpty() || cpf.isEmpty() || dataNascimento.isEmpty()
@@ -245,8 +241,8 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     else if (ValidadorUsuario.contemPalavraProibida(login)) {
         JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    else {
-        JOptionPane.showMessageDialog(this, "Cadastro realizado com sucesso!");
+        else {
+        JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
     }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
