@@ -127,19 +127,19 @@ public class TelaLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-        // 1. captura o que foi digitado nos campos
+       // 1. captura o que foi digitado nos campos
     String loginDigitado = txtLogin.getText();
     String senhaDigitada = new String(txtSenha.getPassword());
 
-    // 2. instancia o objeto de dominio e preenche login e senha
+    // 2. instancia o objeto de dominio usando o construtor vazio + setters
     Usuario usuario = new Usuario();
-    usuario.login = loginDigitado;
-    usuario.senha = senhaDigitada;
+    usuario.setLogin(loginDigitado);
+    usuario.setSenha(senhaDigitada);
 
     // 3. usa os dados vindos do objeto para preencher o label
     lblResultado.setText(
-        "<html>Login digitado: " + usuario.login +
-        "<br>Senha digitada: " + usuario.senha + "</html>");
+        "<html>Login digitado: " + usuario.getLogin() +
+        "<br>Senha digitada: " + usuario.getSenha() + "</html>");
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
