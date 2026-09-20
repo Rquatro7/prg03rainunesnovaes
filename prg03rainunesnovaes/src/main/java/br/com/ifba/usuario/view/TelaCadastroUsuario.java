@@ -210,7 +210,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_cbGeneroActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-       // 1. captura os dados digitados
+      // 1. captura os dados digitados
     String nome = txtNome.getText();
     String cpf = txtCpf.getText();
     String dataNascimento = txtDataNascimento.getText();
@@ -220,7 +220,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     String senha = new String(txtSenha.getPassword());
     String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
-        // 2. instancia o objeto de dominio usando o construtor com parametros
+    // 2. instancia o objeto de dominio usando o construtor com parametros
     Usuario usuario = new Usuario(nome, cpf, login, senha);
     usuario.setGenero(cbGenero.getSelectedItem().toString());
     usuario.setDataNascimento(dataNascimento);
@@ -228,20 +228,26 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     usuario.setEmail(email);
 
     // 3. valida se algum campo esta vazio
-    if (nome.isEmpty() || cpf.isEmpty() || dataNascimento.isEmpty()
-            || telefone.isEmpty() || email.isEmpty() || login.isEmpty()
-            || senha.isEmpty() || confirmarSenha.isEmpty()) {
+    if (!ValidadorUsuario.camposPreenchidos(nome, cpf, dataNascimento, telefone, email, login, senha, confirmarSenha)) {
         JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    // 4. valida se as senhas coincidem
-    else if (!senha.equals(confirmarSenha)) {
+    // 4. valida se o cpf e valido
+    else if (!ValidadorUsuario.cpfValido(cpf)) {
+        JOptionPane.showMessageDialog(this, "CPF inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+    // 5. valida se as senhas coincidem
+    else if (!ValidadorUsuario.senhasCoincidem(senha, confirmarSenha)) {
         JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    // 5. valida se o login contem palavra proibida
+    // 6. valida se a senha e forte o suficiente
+    else if (!ValidadorUsuario.senhaForte(senha)) {
+        JOptionPane.showMessageDialog(this, "A senha deve ter pelo menos 6 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
+    // 7. valida se o login contem palavra proibida
     else if (ValidadorUsuario.contemPalavraProibida(login)) {
         JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-        else {
+    else {
         JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
     }
     }//GEN-LAST:event_btnCadastrarActionPerformed
