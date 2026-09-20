@@ -6,6 +6,7 @@ package br.com.ifba.login.view;
 
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
 import br.com.ifba.usuario.entity.Usuario;
+import javax.swing.JOptionPane;
 /**
  *
  * @author rainu
@@ -127,7 +128,7 @@ public class TelaLogin extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
-       // 1. captura o que foi digitado nos campos
+        // 1. captura o que foi digitado nos campos
     String loginDigitado = txtLogin.getText();
     String senhaDigitada = new String(txtSenha.getPassword());
 
@@ -140,6 +141,13 @@ public class TelaLogin extends javax.swing.JFrame {
     lblResultado.setText(
         "<html>Login digitado: " + usuario.getLogin() +
         "<br>Senha digitada: " + usuario.getSenha() + "</html>");
+
+    // 4. verifica autenticacao usando o metodo da interface Autenticavel
+    if (usuario.autenticar(loginDigitado, senhaDigitada)) {
+        JOptionPane.showMessageDialog(this, "Acesso liberado!");
+    } else {
+        JOptionPane.showMessageDialog(this, "Acesso negado.", "Erro", JOptionPane.ERROR_MESSAGE);
+    }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
