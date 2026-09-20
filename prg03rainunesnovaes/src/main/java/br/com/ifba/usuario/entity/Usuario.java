@@ -1,7 +1,8 @@
 package br.com.ifba.usuario.entity;
+import br.com.ifba.usuario.interfaces.Autenticavel; 
 
 // classe de dominio que representa um usuario do sistema
-public class Usuario {
+public class Usuario implements Autenticavel {
 
     // atributos privados (encapsulamento)
     private String nome;
@@ -88,5 +89,11 @@ public class Usuario {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    // implementacao do metodo da interface Autenticavel
+    @Override
+    public boolean autenticar(String login, String senha) {
+        return this.login.equals(login) && this.senha.equals(senha);
     }
 }
