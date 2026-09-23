@@ -1,5 +1,8 @@
 package br.com.ifba.usuario.entity;
-import br.com.ifba.usuario.interfaces.Autenticavel; 
+import br.com.ifba.usuario.interfaces.Autenticavel;
+import br.com.ifba.produto.entity.Produto;
+import java.util.ArrayList;
+import java.util.List;
 
 // classe de dominio que representa um usuario do sistema
 public class Usuario implements Autenticavel {
@@ -13,9 +16,11 @@ public class Usuario implements Autenticavel {
     private String email;
     private String login;
     private String senha;
+    private List<Produto> produtosMonitorados; // relacionamento 1..N
 
     // construtor vazio
     public Usuario() {
+        this.produtosMonitorados = new ArrayList<>();
     }
 
     // construtor com os atributos principais
@@ -24,6 +29,7 @@ public class Usuario implements Autenticavel {
         this.cpf = cpf;
         this.login = login;
         this.senha = senha;
+        this.produtosMonitorados = new ArrayList<>();
     }
 
     // getters e setters
@@ -89,6 +95,16 @@ public class Usuario implements Autenticavel {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    // retorna uma copia da lista, para nao expor a lista original
+    public List<Produto> getProdutosMonitorados() {
+        return new ArrayList<>(produtosMonitorados);
+    }
+
+    // metodo que adiciona um produto a lista, sem expor a lista para fora
+    public void adicionarProduto(Produto produto) {
+        this.produtosMonitorados.add(produto);
     }
 
     // implementacao do metodo da interface Autenticavel
