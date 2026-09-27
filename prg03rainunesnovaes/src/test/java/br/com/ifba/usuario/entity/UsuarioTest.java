@@ -4,7 +4,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import br.com.ifba.produto.entity.Categoria;
 import br.com.ifba.produto.entity.Produto;
-import br.com.ifba.produto.entity.PlataformaOrigem;
+import br.com.ifba.produto.entity.ProdutoShopee;
+import br.com.ifba.produto.entity.ProdutoMercadoLivre;
 
 public class UsuarioTest {
 
@@ -25,11 +26,12 @@ public class UsuarioTest {
 
         assertFalse(usuario.autenticar("rainunes", "senhaerrada"));
     }
-        @Test
+
+    @Test
     public void adicionarProduto_deveAumentarTamanhoDaLista() {
         Usuario usuario = new Usuario();
         Categoria categoria = new Categoria(1, "Eletronicos");
-        Produto produto = new Produto(1, "Fone Bluetooth", "http://link.com", 99.90, categoria, PlataformaOrigem.SHOPEE);
+        Produto produto = new ProdutoShopee(1, "Fone Bluetooth", "http://link.com", 99.90, categoria, "http://api.shopee.com/fone");
 
         usuario.adicionarProduto(produto);
 
@@ -47,7 +49,7 @@ public class UsuarioTest {
     public void getProdutosMonitorados_deveDevolverProdutoAdicionado() {
         Usuario usuario = new Usuario();
         Categoria categoria = new Categoria(2, "Casa");
-        Produto produto = new Produto(2, "Panela Eletrica", "http://link2.com", 150.00, categoria, PlataformaOrigem.MERCADO_LIVRE);
+        Produto produto = new ProdutoMercadoLivre(2, "Panela Eletrica", "http://link2.com", 150.00, categoria, "#preco-panela");
 
         usuario.adicionarProduto(produto);
 

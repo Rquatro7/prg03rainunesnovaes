@@ -1,7 +1,8 @@
 package br.com.ifba.produto.entity;
 
-// classe de dominio que representa um produto monitorado pelo bot
-public class Produto {
+// classe de dominio abstrata que representa um produto monitorado pelo bot
+// cada plataforma (Shopee, Mercado Livre) especializa como o preco e atualizado
+public abstract class Produto {
 
     private int id;
     private String nome;
@@ -69,4 +70,8 @@ public class Produto {
     public void setPlataforma(PlataformaOrigem plataforma) {
         this.plataforma = plataforma;
     }
+
+    // metodo abstrato: cada subclasse define como atualiza o preco
+    // e devolve uma mensagem propria descrevendo a atualizacao (usado nos testes)
+    public abstract String atualizarPreco();
 }
