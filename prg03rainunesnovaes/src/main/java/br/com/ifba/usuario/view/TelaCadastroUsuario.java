@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import br.com.ifba.usuario.validar.ValidadorUsuario;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.login.view.TelaLogin;
+import br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoria;
 /**
  *
  * @author rainu
@@ -14,7 +15,7 @@ import br.com.ifba.login.view.TelaLogin;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
-
+    private static final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
     /**
      * Creates new form TelaCadastroUsuario
      */
@@ -247,8 +248,13 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     else if (ValidadorUsuario.contemPalavraProibida(login)) {
         JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
     }
-    else {
-        JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
+        else {
+        try {
+            repositorio.cadastrar(usuario);
+            JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
+        } catch (IllegalArgumentException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
