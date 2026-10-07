@@ -3,6 +3,7 @@ import br.com.ifba.usuario.interfaces.Autenticavel;
 import br.com.ifba.produto.entity.Produto;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 // classe de dominio que representa um usuario do sistema
 public class Usuario implements Autenticavel {
@@ -111,5 +112,24 @@ public class Usuario implements Autenticavel {
     @Override
     public boolean autenticar(String login, String senha) {
         return this.login.equals(login) && this.senha.equals(senha);
+    }
+
+    // dois usuarios sao considerados iguais quando tem o mesmo login,
+    // ja que o login e o identificador usado para autenticar e buscar o usuario no sistema
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Usuario outro = (Usuario) obj;
+        return Objects.equals(this.login, outro.login);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(login);
     }
 }
