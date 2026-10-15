@@ -1,1 +1,1 @@
-
+A senha nunca deveria aparecer em nenhuma tela, nem na listagem. CPF, telefone e email também não deveriam aparecer ali, porque são dados pessoais que não ajudam a identificar o usuário rapidamente numa lista. Eles fazem mais sentido na tela de edição, quando o usuário específico é aberto.
