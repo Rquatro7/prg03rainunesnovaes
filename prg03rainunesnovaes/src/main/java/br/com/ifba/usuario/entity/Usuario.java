@@ -1,22 +1,43 @@
 package br.com.ifba.usuario.entity;
 import br.com.ifba.usuario.interfaces.Autenticavel;
 import br.com.ifba.produto.entity.Produto;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 // classe de dominio que representa um usuario do sistema
+@Entity
+@Table(name = "usuario")
 public class Usuario implements Autenticavel {
+
+    // chave primaria, gerada automaticamente pelo banco
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     // atributos privados (encapsulamento)
     private String nome;
     private String cpf;
     private String genero;
+
+    @Column(name = "data_nascimento")
     private String dataNascimento;
+
     private String telefone;
     private String email;
     private String login;
     private String senha;
+
+    // relacionamento ainda nao mapeado como entidade JPA (Produto nao e @Entity ainda),
+    // entao o hibernate ignora esse campo ao persistir Usuario
+    @Transient
     private List<Produto> produtosMonitorados; // relacionamento 1..N
 
     // construtor vazio
@@ -34,6 +55,15 @@ public class Usuario implements Autenticavel {
     }
 
     // getters e setters
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public String getNome() {
         return nome;
     }
