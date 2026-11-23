@@ -31,13 +31,13 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
 
     @Override
     public void save(Entity entity) {
-        EntityManager em = abrir();
+        EntityManager em = abrirEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(entity);
             em.getTransaction().commit();
         } catch (PersistenceException ex) {
-            desfazer(em);
+            desfazerTransacaoSeAberta(em);
             throw new PersistenciaException("salvar " + nomeDoTipo(), ex);
         } finally {
             em.close();
@@ -46,14 +46,14 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
 
     @Override
     public Entity update(Entity entity) {
-        EntityManager em = abrir();
+        EntityManager em = abrirEntityManager();
         try {
             em.getTransaction().begin();
             Entity atualizada = em.merge(entity);
             em.getTransaction().commit();
             return atualizada;
         } catch (PersistenceException ex) {
-            desfazer(em);
+            desfazerTransacaoSeAberta(em);
             throw new PersistenciaException("atualizar " + nomeDoTipo(), ex);
         } finally {
             em.close();
@@ -62,7 +62,7 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
 
     @Override
     public void delete(Entity entity) {
-        EntityManager em = abrir();
+        EntityManager em = abrirEntityManager();
         try {
             Entity encontrada = em.find(tipo, entity.getId());
             if (encontrada == null) {
@@ -72,7 +72,7 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
             em.remove(encontrada);
             em.getTransaction().commit();
         } catch (PersistenceException ex) {
-            desfazer(em);
+            desfazerTransacaoSeAberta(em);
             throw new PersistenciaException("excluir " + nomeDoTipo(), ex);
         } finally {
             em.close();
@@ -93,9 +93,9 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
         return consultar(em -> em.createQuery("SELECT e FROM " + nomeDoTipo() + " e", tipo).getResultList());
     }
 
-    // usado pelos daos especificos para fazer consultas sem repetir o abrir/fechar
+    // usado pelos daos especificos para fazer consultas sem repetir o abrirEntityManager/fechar
     protected <R> R consultar(Function<EntityManager, R> consulta) {
-        EntityManager em = abrir();
+        EntityManager em = abrirEntityManager();
         try {
             return consulta.apply(em);
         } catch (PersistenceException ex) {
@@ -110,7 +110,7 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
     }
 
     // conectar tambem pode falhar (banco desligado, senha errada), e isso vira a excecao do projeto
-    private EntityManager abrir() {
+    private EntityManager abrirEntityManager() {
         try {
             return fabricaDeEntityManager.get();
         } catch (RuntimeException ex) {
@@ -118,7 +118,7 @@ public abstract class GenericDao<Entity extends PersistenceEntity> implements Ge
         }
     }
 
-    private void desfazer(EntityManager em) {
+    private void desfazerTransacaoSeAberta(EntityManager em) {
         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
         }

@@ -11,15 +11,15 @@ import java.util.Map;
 public class RepositorioUsuarioEmMemoria {
 
     private final List<Usuario> usuarios = new ArrayList<>();
-    private final Map<String, Usuario> porLogin = new HashMap<>(); // indice por login, para busca rapida
+    private final Map<String, Usuario> usuariosPorLogin = new HashMap<>(); // indice por login, para busca rapida
 
     // adiciona um usuario na lista e no indice, impedindo login duplicado
     public void cadastrar(Usuario usuario) {
-        if (porLogin.containsKey(usuario.getLogin())) {
+        if (usuariosPorLogin.containsKey(usuario.getLogin())) {
             throw new IllegalArgumentException("Ja existe um usuario cadastrado com esse login.");
         }
         usuarios.add(usuario);
-        porLogin.put(usuario.getLogin(), usuario);
+        usuariosPorLogin.put(usuario.getLogin(), usuario);
     }
 
     // devolve todos os usuarios cadastrados
@@ -40,7 +40,7 @@ public class RepositorioUsuarioEmMemoria {
     // busca usando o map (Task 03, segunda forma) - e o metodo oficial do repositorio
     // antes devolvia null quando nao achava, agora lanca a excecao no lugar onde o problema aparece
     public Usuario buscarPorLogin(String login) {
-        Usuario usuario = porLogin.get(login);
+        Usuario usuario = usuariosPorLogin.get(login);
         if (usuario == null) {
             throw new UsuarioNaoEncontradoException(login);
         }

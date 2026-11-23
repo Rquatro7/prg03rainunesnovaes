@@ -1,0 +1,16 @@
+mvn clean install (sem banco)
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.108 s -- in br.com.ifba.infrastructure.dao.GenericDaoTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s -- in br.com.ifba.PolimorfismoTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in br.com.ifba.produto.entity.ProdutoTest
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s -- in br.com.ifba.usuario.controller.UsuarioControllerTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.028 s -- in br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoriaTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s -- in br.com.ifba.usuario.entity.UsuarioTest
+Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.056 s -- in br.com.ifba.usuario.service.UsuarioServiceTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in br.com.ifba.usuario.validar.ValidadorUsuarioTest
+Tests run: 69, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+
+mvn test -Pbanco (MySQL real)
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.034 s -- in br.com.ifba.usuario.dao.UsuarioDaoBancoTest
+Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
