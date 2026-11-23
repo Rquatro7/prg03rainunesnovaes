@@ -16,32 +16,32 @@ public class UsuarioDaoFalso implements UsuarioIDao {
     private int vezesQueSalvou = 0;
 
     @Override
-    public void salvar(Usuario usuario) {
+    public void save(Usuario usuario) {
         usuario.setId(proximoId++);
         usuarios.put(usuario.getId(), usuario);
         vezesQueSalvou++;
     }
 
     @Override
-    public Usuario atualizar(Usuario usuario) {
+    public Usuario update(Usuario usuario) {
         usuarios.put(usuario.getId(), usuario);
         return usuario;
     }
 
     @Override
-    public void remover(Long id) {
-        if (usuarios.remove(id) == null) {
-            throw new UsuarioNaoEncontradoException(id);
+    public void delete(Usuario usuario) {
+        if (usuarios.remove(usuario.getId()) == null) {
+            throw new UsuarioNaoEncontradoException(usuario.getId());
         }
     }
 
     @Override
-    public List<Usuario> listarTodos() {
+    public List<Usuario> findAll() {
         return new ArrayList<>(usuarios.values());
     }
 
     @Override
-    public List<Usuario> buscarPorNome(String nome) {
+    public List<Usuario> findByNome(String nome) {
         List<Usuario> encontrados = new ArrayList<>();
         for (Usuario usuario : usuarios.values()) {
             if (usuario.getNome().toLowerCase().contains(nome.trim().toLowerCase())) {
@@ -52,7 +52,7 @@ public class UsuarioDaoFalso implements UsuarioIDao {
     }
 
     @Override
-    public Usuario buscarPorId(Long id) {
+    public Usuario findById(Long id) {
         Usuario usuario = usuarios.get(id);
         if (usuario == null) {
             throw new UsuarioNaoEncontradoException(id);
@@ -61,7 +61,7 @@ public class UsuarioDaoFalso implements UsuarioIDao {
     }
 
     @Override
-    public Usuario buscarPorLogin(String login) {
+    public Usuario findByLogin(String login) {
         for (Usuario usuario : usuarios.values()) {
             if (usuario.getLogin().equals(login)) {
                 return usuario;
@@ -71,7 +71,7 @@ public class UsuarioDaoFalso implements UsuarioIDao {
     }
 
     @Override
-    public boolean existeLogin(String login) {
+    public boolean existsByLogin(String login) {
         for (Usuario usuario : usuarios.values()) {
             if (usuario.getLogin().equals(login)) {
                 return true;

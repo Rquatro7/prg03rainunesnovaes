@@ -4,6 +4,7 @@
  */
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.service.UsuarioService;
 import br.com.ifba.usuario.validar.ValidadorUsuario;
@@ -90,7 +91,7 @@ public class TelaEdicaoUsuario extends javax.swing.JFrame {
                 aoSalvar.run();
             }
             dispose();
-        } catch (RuntimeException ex) {
+        } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao atualizar usuario", ex);
             JOptionPane.showMessageDialog(this, "Nao foi possivel salvar as alteracoes.\n" + ex.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);

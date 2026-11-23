@@ -3,7 +3,8 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package br.com.ifba.usuario.view;
-import javax.swing.JOptionPane;
+
+import br.com.ifba.infrastructure.exception.PersistenciaException;import javax.swing.JOptionPane;
 import br.com.ifba.usuario.validar.ValidadorUsuario;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.login.view.TelaLogin;
@@ -268,7 +269,7 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
             }
         } catch (LoginDuplicadoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (RuntimeException ex) {
+        } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao cadastrar usuario", ex);
             JOptionPane.showMessageDialog(this, "Não foi possível salvar no banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
