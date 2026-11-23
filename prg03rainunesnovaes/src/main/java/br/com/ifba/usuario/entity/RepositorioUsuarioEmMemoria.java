@@ -1,6 +1,5 @@
 package br.com.ifba.usuario.entity;
 
-import br.com.ifba.usuario.exception.LoginDuplicadoException;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,7 @@ public class RepositorioUsuarioEmMemoria {
     // adiciona um usuario na lista e no indice, impedindo login duplicado
     public void cadastrar(Usuario usuario) {
         if (porLogin.containsKey(usuario.getLogin())) {
-            throw new LoginDuplicadoException(usuario.getLogin());
+            throw new IllegalArgumentException("Ja existe um usuario cadastrado com esse login.");
         }
         usuarios.add(usuario);
         porLogin.put(usuario.getLogin(), usuario);

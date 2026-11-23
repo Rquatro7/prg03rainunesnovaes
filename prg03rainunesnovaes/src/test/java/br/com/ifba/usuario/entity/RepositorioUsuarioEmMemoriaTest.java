@@ -1,6 +1,5 @@
 package br.com.ifba.usuario.entity;
 
-import br.com.ifba.usuario.exception.LoginDuplicadoException;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -70,7 +69,7 @@ public class RepositorioUsuarioEmMemoriaTest {
 
         repositorio.cadastrar(usuario1);
 
-        assertThrows(LoginDuplicadoException.class, () -> repositorio.cadastrar(usuario2));
+        assertThrows(IllegalArgumentException.class, () -> repositorio.cadastrar(usuario2));
     }
 
     // ---------- prova do equals (Task 02) ----------
