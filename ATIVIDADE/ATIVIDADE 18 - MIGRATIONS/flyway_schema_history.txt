@@ -1,0 +1,23 @@
++----------------+---------+--------------------------------+----------------------------------------+---------+
+| installed_rank | version | description                    | script                                 | success |
++----------------+---------+--------------------------------+----------------------------------------+---------+
+|              1 | 1       | cria tabela usuario            | V1__cria_tabela_usuario.sql            |       1 |
+|              2 | 2       | adiciona chat telegram usuario | V2__adiciona_chat_telegram_usuario.sql |       1 |
+|              3 | 3       | restricoes usuario             | V3__restricoes_usuario.sql             |       1 |
++----------------+---------+--------------------------------+----------------------------------------+---------+
+*************************** 1. row ***************************
+       Table: usuario
+Create Table: CREATE TABLE `usuario` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `cpf` varchar(14) DEFAULT NULL,
+  `genero` varchar(20) DEFAULT NULL,
+  `data_nascimento` varchar(10) DEFAULT NULL,
+  `telefone` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `login` varchar(50) NOT NULL,
+  `senha` varchar(100) NOT NULL,
+  `chat_id_telegram` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_usuario_login` (`login`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci

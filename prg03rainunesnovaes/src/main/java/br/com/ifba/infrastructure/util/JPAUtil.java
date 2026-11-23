@@ -18,6 +18,8 @@ public class JPAUtil {
     // devolve um EntityManager novo, criando a fabrica na primeira chamada
     public static synchronized EntityManager getEntityManager() {
         if (fabrica == null || !fabrica.isOpen()) {
+            // as migrations rodam antes, porque com validate o Hibernate so confere as tabelas
+            MigracaoBanco.migrar();
             fabrica = Persistence.createEntityManagerFactory(UNIDADE_PERSISTENCIA);
         }
         return fabrica.createEntityManager();

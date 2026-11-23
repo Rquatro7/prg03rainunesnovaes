@@ -181,6 +181,15 @@ public class TelaLogin extends javax.swing.JFrame {
         }
         //</editor-fold>
 
+        // aplica as migrations do Flyway antes de abrir a primeira tela
+        try {
+            br.com.ifba.infrastructure.util.MigracaoBanco.migrar();
+        } catch (RuntimeException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao aplicar as migrations", ex);
+            JOptionPane.showMessageDialog(null, "Nao foi possivel atualizar o banco de dados.\n" + ex.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
     }
