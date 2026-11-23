@@ -57,11 +57,11 @@ public class PolimorfismoTest {
     public void processarAtualizacao_deveDevolverSaidasDiferentes_paraSubclassesDiferentes() {
         Categoria categoria = new Categoria(1, "Eletronicos");
         Produto shopee = new ProdutoShopee(1, "Fone", "http://link.com", 50.0, categoria, "http://api.shopee.com/fone");
-        Produto ml = new ProdutoMercadoLivre(2, "Panela", "http://link2.com", 150.0, categoria, "#preco");
+        Produto mercadoLivre = new ProdutoMercadoLivre(2, "Panela", "http://link2.com", 150.0, categoria, "#preco");
 
         String resultadoShopee = Polimorfismo.processarAtualizacao(shopee);
-        String resultadoMl = Polimorfismo.processarAtualizacao(ml);
+        String resultadoMercadoLivre = Polimorfismo.processarAtualizacao(mercadoLivre);
 
-        assertNotEquals(resultadoShopee, resultadoMl);
+        assertNotEquals(resultadoShopee, resultadoMercadoLivre);
     }
 }

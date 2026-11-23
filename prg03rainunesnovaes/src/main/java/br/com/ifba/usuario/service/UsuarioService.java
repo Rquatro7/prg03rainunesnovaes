@@ -27,7 +27,7 @@ public class UsuarioService implements UsuarioIService {
         if (!ValidadorUsuario.senhasCoincidem(usuario.getSenha(), confirmarSenha)) {
             throw new UsuarioInvalidoException("As senhas não coincidem.");
         }
-        if (!ValidadorUsuario.senhaForte(usuario.getSenha())) {
+        if (!ValidadorUsuario.senhaTemTamanhoMinimo(usuario.getSenha())) {
             throw new UsuarioInvalidoException("A senha deve ter pelo menos 6 caracteres.");
         }
         if (ValidadorUsuario.contemPalavraProibida(usuario.getLogin())) {

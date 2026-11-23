@@ -10,10 +10,7 @@ import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -23,22 +20,10 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaListagemUsuario.class.getName());
 
-    private static final int COLUNA_EDITAR = 3;
-    private static final int COLUNA_REMOVER = 4;
-
     private final UsuarioIController controller;
     private final TelaCadastroUsuario telaCadastro;
     private final TelaEdicaoUsuario telaEdicao;
-    private List<Usuario> usuariosNaTabela = new ArrayList<>(); // mesma ordem das linhas da tabela
-
-    // tabela so para leitura, o clique em Editar ou Remover e tratado no mouse
-    private final DefaultTableModel modelo = new DefaultTableModel(
-            new Object[]{"Nome", "Login", "CPF", "Editar", "Remover"}, 0) {
-        @Override
-        public boolean isCellEditable(int linha, int coluna) {
-            return false;
-        }
-    };
+    private final UsuarioTableModel modeloTabela = new UsuarioTableModel();
 
     /**
      * Creates new form TelaListagemUsuario
@@ -63,7 +48,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
     private void configurarTela() {
         txtBusca.setText("");
         txtBusca.setToolTipText("Digite parte do nome");
-        tblUsuarios.setModel(modelo);
+        tblUsuarios.setModel(modeloTabela);
         btnBuscar.addActionListener(evt -> carregarTabela());
         txtBusca.addActionListener(evt -> carregarTabela());
         btnNovoUsuario.addActionListener(evt -> telaCadastro.abrir(this::carregarTabela, () -> { }));
@@ -75,10 +60,10 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
                 if (linha < 0) {
                     return;
                 }
-                Usuario usuario = usuariosNaTabela.get(linha);
-                if (coluna == COLUNA_EDITAR) {
+                Usuario usuario = modeloTabela.getUsuario(linha);
+                if (coluna == UsuarioTableModel.COLUNA_EDITAR) {
                     abrirEdicao(usuario);
-                } else if (coluna == COLUNA_REMOVER) {
+                } else if (coluna == UsuarioTableModel.COLUNA_REMOVER) {
                     remover(usuario);
                 }
             }
@@ -88,11 +73,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
     // busca no banco usando o texto digitado (vazio traz todos)
     private void carregarTabela() {
         try {
-            usuariosNaTabela = controller.listar(txtBusca.getText());
-            modelo.setRowCount(0);
-            for (Usuario usuario : usuariosNaTabela) {
-                modelo.addRow(new Object[]{usuario.getNome(), usuario.getLogin(), usuario.getCpf(), "Editar", "Remover"});
-            }
+            modeloTabela.setUsuarios(controller.listar(txtBusca.getText()));
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao listar usuarios", ex);
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);

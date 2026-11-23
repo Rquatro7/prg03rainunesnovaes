@@ -34,21 +34,21 @@ public class ValidadorUsuarioTest {
         assertFalse(ValidadorUsuario.senhasCoincidem("123456", "654321"));
     }
 
-    // ---------- senhaForte ----------
+    // ---------- senhaTemTamanhoMinimo ----------
 
     @Test
-    public void senhaForte_deveRetornarTrue_quandoTamanhoMinimo() {
-        assertTrue(ValidadorUsuario.senhaForte("123456"));
+    public void senhaTemTamanhoMinimo_deveRetornarTrue_quandoTamanhoMinimo() {
+        assertTrue(ValidadorUsuario.senhaTemTamanhoMinimo("123456"));
     }
 
     @Test
-    public void senhaForte_deveRetornarFalse_quandoMenorQueMinimo() {
-        assertFalse(ValidadorUsuario.senhaForte("123"));
+    public void senhaTemTamanhoMinimo_deveRetornarFalse_quandoMenorQueMinimo() {
+        assertFalse(ValidadorUsuario.senhaTemTamanhoMinimo("123"));
     }
 
     @Test
-    public void senhaForte_deveRetornarFalse_quandoNull() {
-        assertFalse(ValidadorUsuario.senhaForte(null));
+    public void senhaTemTamanhoMinimo_deveRetornarFalse_quandoNull() {
+        assertFalse(ValidadorUsuario.senhaTemTamanhoMinimo(null));
     }
 
     // ---------- cpfValido ----------

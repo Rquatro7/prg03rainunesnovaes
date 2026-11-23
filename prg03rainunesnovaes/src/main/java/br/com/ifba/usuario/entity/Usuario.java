@@ -44,7 +44,7 @@ public class Usuario extends PersistenceEntity implements Autenticavel {
     @Transient
     private List<Produto> produtosMonitorados; // relacionamento 1..N
 
-    // construtor vazio
+    // o Hibernate precisa de um construtor sem parametros para montar o objeto que vem do banco
     public Usuario() {
         this.produtosMonitorados = new ArrayList<>();
     }
@@ -57,8 +57,6 @@ public class Usuario extends PersistenceEntity implements Autenticavel {
         this.senha = senha;
         this.produtosMonitorados = new ArrayList<>();
     }
-
-    // getters e setters
 
     public String getNome() {
         return nome;

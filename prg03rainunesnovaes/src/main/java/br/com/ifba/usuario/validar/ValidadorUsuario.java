@@ -35,7 +35,7 @@ public class ValidadorUsuario {
     /**
      * Verifica se a senha tem o tamanho minimo exigido.
      */
-    public static boolean senhaForte(String senha) {
+    public static boolean senhaTemTamanhoMinimo(String senha) {
         if (senha == null) {
             return false;
         }

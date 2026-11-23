@@ -31,9 +31,9 @@ public class Polimorfismo {
         // Task 01 e 03: superclasse abstrata Produto
         Categoria categoria = new Categoria(1, "Eletronicos");
         Produto shopee = new ProdutoShopee(1, "Fone", "http://link.com", 50.0, categoria, "http://api.shopee.com/fone");
-        Produto ml = new ProdutoMercadoLivre(2, "Panela", "http://link2.com", 150.0, categoria, "#preco");
+        Produto mercadoLivre = new ProdutoMercadoLivre(2, "Panela", "http://link2.com", 150.0, categoria, "#preco");
 
         System.out.println(processarAtualizacao(shopee));
-        System.out.println(processarAtualizacao(ml));
+        System.out.println(processarAtualizacao(mercadoLivre));
     }
 }
