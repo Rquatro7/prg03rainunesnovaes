@@ -1,0 +1,18 @@
+mvn clean install (suite normal, sem banco)
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.119 s -- in br.com.ifba.PolimorfismoTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.027 s -- in br.com.ifba.produto.entity.ProdutoTest
+Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoriaTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.022 s -- in br.com.ifba.usuario.entity.UsuarioTest
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.039 s -- in br.com.ifba.usuario.service.UsuarioServiceTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.043 s -- in br.com.ifba.usuario.validar.ValidadorUsuarioTest
+Tests run: 49, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
+
+mvn test -Pbanco (MySQL real, banco recriado do zero)
+Migrating schema `prg03_promobot` to version "1 - cria tabela usuario"
+Migrating schema `prg03_promobot` to version "2 - adiciona chat telegram usuario"
+Migrating schema `prg03_promobot` to version "3 - restricoes usuario"
+Successfully applied 3 migrations to schema `prg03_promobot`, now at version v3 (execution time 00:00.239s)
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 8.368 s -- in br.com.ifba.usuario.dao.UsuarioDaoBancoTest
+Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS

@@ -23,7 +23,9 @@ public class Usuario implements Autenticavel {
     private Long id;
 
     // atributos privados (encapsulamento)
+    @Column(nullable = false, length = 100)
     private String nome;
+
     private String cpf;
     private String genero;
 
@@ -32,8 +34,15 @@ public class Usuario implements Autenticavel {
 
     private String telefone;
     private String email;
+    @Column(nullable = false, unique = true, length = 50)
     private String login;
+
+    @Column(nullable = false, length = 100)
     private String senha;
+
+    // chat do Telegram onde o usuario recebe as ofertas (coluna criada na V2)
+    @Column(name = "chat_id_telegram", length = 30)
+    private String chatIdTelegram;
 
     // relacionamento ainda nao mapeado como entidade JPA (Produto nao e @Entity ainda),
     // entao o hibernate ignora esse campo ao persistir Usuario
@@ -126,6 +135,14 @@ public class Usuario implements Autenticavel {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getChatIdTelegram() {
+        return chatIdTelegram;
+    }
+
+    public void setChatIdTelegram(String chatIdTelegram) {
+        this.chatIdTelegram = chatIdTelegram;
     }
 
     // retorna uma copia da lista, para nao expor a lista original
