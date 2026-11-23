@@ -1,0 +1,7 @@
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.139 s -- in br.com.ifba.PolimorfismoTest
+Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.042 s -- in br.com.ifba.produto.entity.ProdutoTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.035 s -- in br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoriaTest
+Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.026 s -- in br.com.ifba.usuario.entity.UsuarioTest
+Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.052 s -- in br.com.ifba.usuario.validar.ValidadorUsuarioTest
+Tests run: 36, Failures: 0, Errors: 0, Skipped: 0
+BUILD SUCCESS
