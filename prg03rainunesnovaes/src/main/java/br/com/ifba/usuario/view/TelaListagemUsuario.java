@@ -5,9 +5,9 @@
 package br.com.ifba.usuario.view;
 
 import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
-import br.com.ifba.usuario.service.UsuarioService;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -20,13 +20,15 @@ import javax.swing.table.DefaultTableModel;
  * @author rainu
  */
 public class TelaListagemUsuario extends javax.swing.JFrame {
-
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaListagemUsuario.class.getName());
 
     private static final int COLUNA_EDITAR = 3;
     private static final int COLUNA_REMOVER = 4;
 
-    private final UsuarioService service = new UsuarioService();
+    private final UsuarioIController controller;
+    private final TelaCadastroUsuario telaCadastro;
+    private final TelaEdicaoUsuario telaEdicao;
     private List<Usuario> usuariosNaTabela = new ArrayList<>(); // mesma ordem das linhas da tabela
 
     // tabela so para leitura, o clique em Editar ou Remover e tratado no mouse
@@ -41,10 +43,20 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
     /**
      * Creates new form TelaListagemUsuario
      */
-    public TelaListagemUsuario() {
+    public TelaListagemUsuario(UsuarioIController controller, TelaCadastroUsuario telaCadastro,
+            TelaEdicaoUsuario telaEdicao) {
         initComponents();
+        this.controller = controller;
+        this.telaCadastro = telaCadastro;
+        this.telaEdicao = telaEdicao;
         configurarTela();
+    }
+
+    // carrega os usuarios do banco e mostra a tela
+    public void abrir() {
         carregarTabela();
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     // liga os componentes criados no GUI Builder com a logica da tela
@@ -54,7 +66,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
         tblUsuarios.setModel(modelo);
         btnBuscar.addActionListener(evt -> carregarTabela());
         txtBusca.addActionListener(evt -> carregarTabela());
-        btnNovoUsuario.addActionListener(evt -> new TelaCadastroUsuario(this::carregarTabela).setVisible(true));
+        btnNovoUsuario.addActionListener(evt -> telaCadastro.abrir(this::carregarTabela, () -> { }));
         tblUsuarios.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent evt) {
@@ -76,28 +88,26 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
     // busca no banco usando o texto digitado (vazio traz todos)
     private void carregarTabela() {
         try {
-            usuariosNaTabela = service.buscarPorNome(txtBusca.getText());
+            usuariosNaTabela = controller.listar(txtBusca.getText());
             modelo.setRowCount(0);
             for (Usuario usuario : usuariosNaTabela) {
                 modelo.addRow(new Object[]{usuario.getNome(), usuario.getLogin(), usuario.getCpf(), "Editar", "Remover"});
             }
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao listar usuarios", ex);
-            JOptionPane.showMessageDialog(this, "Nao foi possivel carregar os usuarios do banco.\n" + ex.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void abrirEdicao(Usuario usuario) {
         try {
-            new TelaEdicaoUsuario(usuario.getId(), this::carregarTabela).setVisible(true);
+            telaEdicao.abrir(usuario.getId(), this::carregarTabela);
         } catch (UsuarioNaoEncontradoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             carregarTabela();
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao abrir edicao", ex);
-            JOptionPane.showMessageDialog(this, "Nao foi possivel abrir o usuario.\n" + ex.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -108,14 +118,13 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
             return;
         }
         try {
-            service.remover(usuario.getId());
+            controller.excluir(usuario.getId());
             JOptionPane.showMessageDialog(this, "Usuario removido.");
         } catch (UsuarioNaoEncontradoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao remover usuario", ex);
-            JOptionPane.showMessageDialog(this, "Nao foi possivel remover o usuario.\n" + ex.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
         carregarTabela();
     }
@@ -189,31 +198,6 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaListagemUsuario().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnBuscar;

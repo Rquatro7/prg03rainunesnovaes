@@ -4,12 +4,14 @@
  */
 package br.com.ifba.usuario.view;
 
-import br.com.ifba.infrastructure.exception.PersistenciaException;import javax.swing.JOptionPane;
-import br.com.ifba.usuario.validar.ValidadorUsuario;
+import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
-import br.com.ifba.login.view.TelaLogin;
 import br.com.ifba.usuario.exception.LoginDuplicadoException;
-import br.com.ifba.usuario.service.UsuarioService;
+import br.com.ifba.usuario.exception.UsuarioInvalidoException;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.JOptionPane;
 /**
  *
  * @author rainu
@@ -17,21 +19,51 @@ import br.com.ifba.usuario.service.UsuarioService;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
-    private final UsuarioService service = new UsuarioService();
-    private Runnable aoSalvar; // quando a tela e aberta pela listagem, avisa para recarregar
+
+    private final UsuarioIController controller;
+    private Runnable aoSalvar = () -> { };  // quem abriu a tela decide o que fazer depois de salvar
+    private Runnable aoFechar = () -> { };  // e o que fazer quando ela fecha (ex.: voltar para o login)
 
     /**
      * Creates new form TelaCadastroUsuario
      */
-    public TelaCadastroUsuario() {
+    public TelaCadastroUsuario(UsuarioIController controller) {
         initComponents();
+        this.controller = controller;
+        // fechar no X nao encerra o programa, so volta para quem abriu a tela
+        setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
+                fechar();
+            }
+        });
     }
 
-    // construtor usado pela tela de listagem: ao fechar, so fecha esta janela
-    public TelaCadastroUsuario(Runnable aoSalvar) {
-        initComponents();
+    // abre a tela limpa para um cadastro novo
+    public void abrir(Runnable aoSalvar, Runnable aoFechar) {
         this.aoSalvar = aoSalvar;
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        this.aoFechar = aoFechar;
+        limparCampos();
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void limparCampos() {
+        txtNome.setText("");
+        txtCpf.setText("");
+        txtDataNascimento.setText("");
+        txtTelefone.setText("");
+        txtEmail.setText("");
+        txtLogin.setText("");
+        txtSenha.setText("");
+        txtConfirmarSenha.setText("");
+        cbGenero.setSelectedIndex(0);
+    }
+
+    private void fechar() {
+        setVisible(false);
+        aoFechar.run();
     }
 
     /**
@@ -222,58 +254,26 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_cbGeneroActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
-      // 1. captura os dados digitados
-    String nome = txtNome.getText();
-    String cpf = txtCpf.getText();
-    String dataNascimento = txtDataNascimento.getText();
-    String telefone = txtTelefone.getText();
-    String email = txtEmail.getText();
-    String login = txtLogin.getText();
-    String senha = new String(txtSenha.getPassword());
-    String confirmarSenha = new String(txtConfirmarSenha.getPassword());
+        // a tela so junta os dados digitados, quem valida as regras e a service
+        Usuario usuario = new Usuario(txtNome.getText(), txtCpf.getText(), txtLogin.getText(),
+                new String(txtSenha.getPassword()));
+        usuario.setGenero(cbGenero.getSelectedItem().toString());
+        usuario.setDataNascimento(txtDataNascimento.getText());
+        usuario.setTelefone(txtTelefone.getText());
+        usuario.setEmail(txtEmail.getText());
+        String confirmarSenha = new String(txtConfirmarSenha.getPassword());
 
-    // 2. instancia o objeto de dominio usando o construtor com parametros
-    Usuario usuario = new Usuario(nome, cpf, login, senha);
-    usuario.setGenero(cbGenero.getSelectedItem().toString());
-    usuario.setDataNascimento(dataNascimento);
-    usuario.setTelefone(telefone);
-    usuario.setEmail(email);
-
-    // 3. valida se algum campo esta vazio
-    if (!ValidadorUsuario.camposPreenchidos(nome, cpf, dataNascimento, telefone, email, login, senha, confirmarSenha)) {
-        JOptionPane.showMessageDialog(this, "Preencha todos os campos.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-    // 4. valida se o cpf e valido
-    else if (!ValidadorUsuario.cpfValido(cpf)) {
-        JOptionPane.showMessageDialog(this, "CPF inválido.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-    // 5. valida se as senhas coincidem
-    else if (!ValidadorUsuario.senhasCoincidem(senha, confirmarSenha)) {
-        JOptionPane.showMessageDialog(this, "As senhas não coincidem.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-    // 6. valida se a senha e forte o suficiente
-    else if (!ValidadorUsuario.senhaForte(senha)) {
-        JOptionPane.showMessageDialog(this, "A senha deve ter pelo menos 6 caracteres.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-    // 7. valida se o login contem palavra proibida
-    else if (ValidadorUsuario.contemPalavraProibida(login)) {
-        JOptionPane.showMessageDialog(this, "Login contém palavra não permitida.", "Erro", JOptionPane.ERROR_MESSAGE);
-    }
-        else {
         try {
-            service.cadastrar(usuario);
+            controller.salvar(usuario, confirmarSenha);
             JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
-            if (aoSalvar != null) {
-                aoSalvar.run();
-                this.dispose();
-            }
-        } catch (LoginDuplicadoException ex) {
+            aoSalvar.run();
+            fechar();
+        } catch (UsuarioInvalidoException | LoginDuplicadoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao cadastrar usuario", ex);
-            JOptionPane.showMessageDialog(this, "Não foi possível salvar no banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void txtLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtLoginActionPerformed
@@ -281,37 +281,8 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        // se veio da listagem so fecha, se veio do login volta para o login
-        if (aoSalvar == null) {
-            new TelaLogin().setVisible(true);
-        }
-        this.dispose();
+        fechar();
     }//GEN-LAST:event_btnCancelarActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaCadastroUsuario().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCadastrar;

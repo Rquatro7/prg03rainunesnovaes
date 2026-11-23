@@ -4,46 +4,54 @@ import br.com.ifba.usuario.dao.UsuarioIDao;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-// dao em memoria usado so nos testes, para testar a service sem precisar do MySQL
-public class UsuarioDaoFalso implements UsuarioIDao {
+// dublê do dao: guarda os usuarios numa List em memoria
+// assim os testes da service rodam sem banco nenhum
+public class FakeUsuarioDao implements UsuarioIDao {
 
-    private final Map<Long, Usuario> usuarios = new LinkedHashMap<>();
+    private final List<Usuario> usuarios = new ArrayList<>();
     private long proximoId = 1;
     private int vezesQueSalvou = 0;
 
     @Override
     public void save(Usuario usuario) {
         usuario.setId(proximoId++);
-        usuarios.put(usuario.getId(), usuario);
+        usuarios.add(usuario);
         vezesQueSalvou++;
     }
 
     @Override
     public Usuario update(Usuario usuario) {
-        usuarios.put(usuario.getId(), usuario);
+        Usuario antigo = findById(usuario.getId());
+        usuarios.set(usuarios.indexOf(antigo), usuario);
         return usuario;
     }
 
     @Override
     public void delete(Usuario usuario) {
-        if (usuarios.remove(usuario.getId()) == null) {
-            throw new UsuarioNaoEncontradoException(usuario.getId());
+        usuarios.remove(findById(usuario.getId()));
+    }
+
+    @Override
+    public Usuario findById(Long id) {
+        for (Usuario usuario : usuarios) {
+            if (usuario.getId().equals(id)) {
+                return usuario;
+            }
         }
+        throw new UsuarioNaoEncontradoException(id);
     }
 
     @Override
     public List<Usuario> findAll() {
-        return new ArrayList<>(usuarios.values());
+        return new ArrayList<>(usuarios);
     }
 
     @Override
     public List<Usuario> findByNome(String nome) {
         List<Usuario> encontrados = new ArrayList<>();
-        for (Usuario usuario : usuarios.values()) {
+        for (Usuario usuario : usuarios) {
             if (usuario.getNome().toLowerCase().contains(nome.trim().toLowerCase())) {
                 encontrados.add(usuario);
             }
@@ -52,17 +60,8 @@ public class UsuarioDaoFalso implements UsuarioIDao {
     }
 
     @Override
-    public Usuario findById(Long id) {
-        Usuario usuario = usuarios.get(id);
-        if (usuario == null) {
-            throw new UsuarioNaoEncontradoException(id);
-        }
-        return usuario;
-    }
-
-    @Override
     public Usuario findByLogin(String login) {
-        for (Usuario usuario : usuarios.values()) {
+        for (Usuario usuario : usuarios) {
             if (usuario.getLogin().equals(login)) {
                 return usuario;
             }
@@ -72,7 +71,7 @@ public class UsuarioDaoFalso implements UsuarioIDao {
 
     @Override
     public boolean existsByLogin(String login) {
-        for (Usuario usuario : usuarios.values()) {
+        for (Usuario usuario : usuarios) {
             if (usuario.getLogin().equals(login)) {
                 return true;
             }
