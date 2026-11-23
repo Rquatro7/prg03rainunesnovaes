@@ -5,7 +5,9 @@
 package br.com.ifba.login.view;
 
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
-import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
+import br.com.ifba.usuario.service.UsuarioService;
+import br.com.ifba.usuario.view.TelaListagemUsuario;
 import javax.swing.JOptionPane;
 /**
  *
@@ -132,21 +134,23 @@ public class TelaLogin extends javax.swing.JFrame {
     String loginDigitado = txtLogin.getText();
     String senhaDigitada = new String(txtSenha.getPassword());
 
-    // 2. instancia o objeto de dominio usando o construtor vazio + setters
-    Usuario usuario = new Usuario();
-    usuario.setLogin(loginDigitado);
-    usuario.setSenha(senhaDigitada);
-
-    // 3. usa os dados vindos do objeto para preencher o label
-    lblResultado.setText(
-        "<html>Login digitado: " + usuario.getLogin() +
-        "<br>Senha digitada: " + usuario.getSenha() + "</html>");
-
-    // 4. verifica autenticacao usando o metodo da interface Autenticavel
-    if (usuario.autenticar(loginDigitado, senhaDigitada)) {
-        JOptionPane.showMessageDialog(this, "Acesso liberado!");
-    } else {
-        JOptionPane.showMessageDialog(this, "Acesso negado.", "Erro", JOptionPane.ERROR_MESSAGE);
+    // 2. pede para a service conferir login e senha no banco
+    try {
+        if (new UsuarioService().autenticar(loginDigitado, senhaDigitada)) {
+            JOptionPane.showMessageDialog(this, "Acesso liberado!");
+            new TelaListagemUsuario().setVisible(true);
+            this.dispose();
+        } else {
+            lblResultado.setText("Senha incorreta.");
+            JOptionPane.showMessageDialog(this, "Acesso negado.", "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (UsuarioNaoEncontradoException ex) {
+        // 3. login que nao existe chega aqui como excecao, e a mensagem vai para o usuario
+        lblResultado.setText("Login nao cadastrado.");
+        JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+    } catch (RuntimeException ex) {
+        logger.log(java.util.logging.Level.SEVERE, "Erro ao autenticar", ex);
+        JOptionPane.showMessageDialog(this, "Nao foi possivel acessar o banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_btnEntrarActionPerformed
 

@@ -7,7 +7,8 @@ import javax.swing.JOptionPane;
 import br.com.ifba.usuario.validar.ValidadorUsuario;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.login.view.TelaLogin;
-import br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoria;
+import br.com.ifba.usuario.exception.LoginDuplicadoException;
+import br.com.ifba.usuario.service.UsuarioService;
 /**
  *
  * @author rainu
@@ -15,12 +16,21 @@ import br.com.ifba.usuario.entity.RepositorioUsuarioEmMemoria;
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());
-    private static final RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+    private final UsuarioService service = new UsuarioService();
+    private Runnable aoSalvar; // quando a tela e aberta pela listagem, avisa para recarregar
+
     /**
      * Creates new form TelaCadastroUsuario
      */
     public TelaCadastroUsuario() {
         initComponents();
+    }
+
+    // construtor usado pela tela de listagem: ao fechar, so fecha esta janela
+    public TelaCadastroUsuario(Runnable aoSalvar) {
+        initComponents();
+        this.aoSalvar = aoSalvar;
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -250,10 +260,17 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }
         else {
         try {
-            repositorio.cadastrar(usuario);
+            service.cadastrar(usuario);
             JOptionPane.showMessageDialog(this, "Usuário " + usuario.getNome() + " cadastrado com sucesso!");
-        } catch (IllegalArgumentException ex) {
+            if (aoSalvar != null) {
+                aoSalvar.run();
+                this.dispose();
+            }
+        } catch (LoginDuplicadoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (RuntimeException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao cadastrar usuario", ex);
+            JOptionPane.showMessageDialog(this, "Não foi possível salvar no banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
     }//GEN-LAST:event_btnCadastrarActionPerformed
@@ -263,8 +280,10 @@ public class TelaCadastroUsuario extends javax.swing.JFrame {
     }//GEN-LAST:event_txtLoginActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        TelaLogin telaLogin = new TelaLogin();
-        telaLogin.setVisible(true);
+        // se veio da listagem so fecha, se veio do login volta para o login
+        if (aoSalvar == null) {
+            new TelaLogin().setVisible(true);
+        }
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 

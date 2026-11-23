@@ -1,5 +1,7 @@
 package br.com.ifba.usuario.entity;
 
+import br.com.ifba.usuario.exception.LoginDuplicadoException;
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,10 +30,36 @@ public class RepositorioUsuarioEmMemoriaTest {
     }
 
     @Test
-    public void buscarPorLogin_deveDevolverNull_quandoLoginNaoExiste() {
+    public void buscarPorLogin_deveLancarExcecao_quandoLoginNaoExiste() {
         RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
 
-        assertNull(repositorio.buscarPorLogin("naoexiste"));
+        assertThrows(UsuarioNaoEncontradoException.class, () -> repositorio.buscarPorLogin("naoexiste"));
+    }
+
+    @Test
+    public void buscarPorLogin_naoDeveLancarExcecao_quandoLoginExiste() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        repositorio.cadastrar(new Usuario("Rai", "12345678900", "rainunes", "123456"));
+
+        assertDoesNotThrow(() -> repositorio.buscarPorLogin("rainunes"));
+    }
+
+    @Test
+    public void buscarPorLoginComFor_deveLancarExcecao_quandoLoginNaoExiste() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+        repositorio.cadastrar(new Usuario("Rai", "12345678900", "rainunes", "123456"));
+
+        assertThrows(UsuarioNaoEncontradoException.class, () -> repositorio.buscarPorLoginComFor("outro"));
+    }
+
+    @Test
+    public void excecao_deveTrazerLoginNaMensagem() {
+        RepositorioUsuarioEmMemoria repositorio = new RepositorioUsuarioEmMemoria();
+
+        UsuarioNaoEncontradoException ex = assertThrows(UsuarioNaoEncontradoException.class,
+                () -> repositorio.buscarPorLogin("fantasma"));
+
+        assertTrue(ex.getMessage().contains("fantasma"));
     }
 
     @Test
@@ -42,7 +70,7 @@ public class RepositorioUsuarioEmMemoriaTest {
 
         repositorio.cadastrar(usuario1);
 
-        assertThrows(IllegalArgumentException.class, () -> repositorio.cadastrar(usuario2));
+        assertThrows(LoginDuplicadoException.class, () -> repositorio.cadastrar(usuario2));
     }
 
     // ---------- prova do equals (Task 02) ----------
