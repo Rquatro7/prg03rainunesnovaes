@@ -23,36 +23,37 @@ public class UsuarioService {
 
     // cadastra um usuario novo, impedindo login repetido
     public void cadastrar(Usuario usuario) {
-        if (dao.existeLogin(usuario.getLogin())) {
+        if (dao.existsByLogin(usuario.getLogin())) {
             throw new LoginDuplicadoException(usuario.getLogin());
         }
-        dao.salvar(usuario);
+        dao.save(usuario);
     }
 
     // busca o usuario pelo login e confere a senha
     // se o login nao existe, o dao lanca UsuarioNaoEncontradoException
     public boolean autenticar(String login, String senha) {
-        Usuario usuario = dao.buscarPorLogin(login);
+        Usuario usuario = dao.findByLogin(login);
         return usuario.autenticar(login, senha);
     }
 
     public Usuario atualizar(Usuario usuario) {
-        return dao.atualizar(usuario);
+        return dao.update(usuario);
     }
 
+    // busca antes para avisar com UsuarioNaoEncontradoException se o id nao existir mais
     public void remover(Long id) {
-        dao.remover(id);
+        dao.delete(dao.findById(id));
     }
 
     public Usuario buscarPorId(Long id) {
-        return dao.buscarPorId(id);
+        return dao.findById(id);
     }
 
     // texto vazio traz todos, senao filtra pelo nome
     public List<Usuario> buscarPorNome(String nome) {
         if (nome == null || nome.trim().isEmpty()) {
-            return dao.listarTodos();
+            return dao.findAll();
         }
-        return dao.buscarPorNome(nome);
+        return dao.findByNome(nome);
     }
 }

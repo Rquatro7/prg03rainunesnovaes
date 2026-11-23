@@ -4,6 +4,7 @@
  */
 package br.com.ifba.login.view;
 
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.view.TelaCadastroUsuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import br.com.ifba.usuario.service.UsuarioService;
@@ -148,7 +149,7 @@ public class TelaLogin extends javax.swing.JFrame {
         // 3. login que nao existe chega aqui como excecao, e a mensagem vai para o usuario
         lblResultado.setText("Login nao cadastrado.");
         JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-    } catch (RuntimeException ex) {
+    } catch (PersistenciaException ex) {
         logger.log(java.util.logging.Level.SEVERE, "Erro ao autenticar", ex);
         JOptionPane.showMessageDialog(this, "Nao foi possivel acessar o banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
     }

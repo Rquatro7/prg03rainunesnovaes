@@ -4,6 +4,7 @@
  */
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import br.com.ifba.usuario.service.UsuarioService;
@@ -80,7 +81,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
             for (Usuario usuario : usuariosNaTabela) {
                 modelo.addRow(new Object[]{usuario.getNome(), usuario.getLogin(), usuario.getCpf(), "Editar", "Remover"});
             }
-        } catch (RuntimeException ex) {
+        } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao listar usuarios", ex);
             JOptionPane.showMessageDialog(this, "Nao foi possivel carregar os usuarios do banco.\n" + ex.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
@@ -93,7 +94,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
         } catch (UsuarioNaoEncontradoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             carregarTabela();
-        } catch (RuntimeException ex) {
+        } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao abrir edicao", ex);
             JOptionPane.showMessageDialog(this, "Nao foi possivel abrir o usuario.\n" + ex.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);
@@ -111,7 +112,7 @@ public class TelaListagemUsuario extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Usuario removido.");
         } catch (UsuarioNaoEncontradoException ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (RuntimeException ex) {
+        } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao remover usuario", ex);
             JOptionPane.showMessageDialog(this, "Nao foi possivel remover o usuario.\n" + ex.getMessage(),
                     "Erro", JOptionPane.ERROR_MESSAGE);

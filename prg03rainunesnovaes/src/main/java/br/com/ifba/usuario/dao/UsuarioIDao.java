@@ -1,25 +1,15 @@
 package br.com.ifba.usuario.dao;
 
+import br.com.ifba.infrastructure.dao.GenericIDao;
 import br.com.ifba.usuario.entity.Usuario;
 import java.util.List;
 
-// contrato de acesso aos dados de usuario
-// a service depende so dessa interface, assim da para testar sem banco
-public interface UsuarioIDao {
+// o CRUD basico vem do GenericIDao, aqui ficam so as buscas proprias do usuario
+public interface UsuarioIDao extends GenericIDao<Usuario> {
 
-    void salvar(Usuario usuario);
+    Usuario findByLogin(String login);
 
-    Usuario atualizar(Usuario usuario);
+    List<Usuario> findByNome(String nome);
 
-    void remover(Long id);
-
-    List<Usuario> listarTodos();
-
-    List<Usuario> buscarPorNome(String nome);
-
-    Usuario buscarPorId(Long id);
-
-    Usuario buscarPorLogin(String login);
-
-    boolean existeLogin(String login);
+    boolean existsByLogin(String login);
 }
