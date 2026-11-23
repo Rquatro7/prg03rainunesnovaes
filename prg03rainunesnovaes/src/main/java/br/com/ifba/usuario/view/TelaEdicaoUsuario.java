@@ -5,9 +5,9 @@
 package br.com.ifba.usuario.view;
 
 import br.com.ifba.infrastructure.exception.PersistenciaException;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
-import br.com.ifba.usuario.service.UsuarioService;
-import br.com.ifba.usuario.validar.ValidadorUsuario;
+import br.com.ifba.usuario.exception.UsuarioInvalidoException;
 import javax.swing.JOptionPane;
 
 /**
@@ -15,32 +15,34 @@ import javax.swing.JOptionPane;
  * @author rainu
  */
 public class TelaEdicaoUsuario extends javax.swing.JFrame {
-
+    
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaEdicaoUsuario.class.getName());
 
-    private final UsuarioService service = new UsuarioService();
+    private final UsuarioIController controller;
     private Usuario usuario;
-    private Runnable aoSalvar; // avisa a listagem para recarregar depois de salvar
+    private Runnable aoSalvar = () -> { }; // avisa a listagem para recarregar depois de salvar
 
     /**
      * Creates new form TelaEdicaoUsuario
      */
-    public TelaEdicaoUsuario() {
+    public TelaEdicaoUsuario(UsuarioIController controller) {
         initComponents();
+        this.controller = controller;
+        setDefaultCloseOperation(javax.swing.WindowConstants.HIDE_ON_CLOSE);
+        setTitle("Editar usuario");
+        configurarCampos();
+        btnSalvar.addActionListener(evt -> salvar());
+        btnCancelar.addActionListener(evt -> setVisible(false));
     }
 
     // abre a tela ja com os dados do usuario vindos do banco
-    // se o id nao existir mais, o service lanca UsuarioNaoEncontradoException para quem abriu a tela
-    public TelaEdicaoUsuario(Long id, Runnable aoSalvar) {
-        initComponents();
+    // se o id nao existir mais, o controller lanca UsuarioNaoEncontradoException para quem pediu
+    public void abrir(Long id, Runnable aoSalvar) {
+        this.usuario = controller.buscarPorId(id);
         this.aoSalvar = aoSalvar;
-        this.usuario = service.buscarPorId(id);
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Editar usuario");
-        configurarCampos();
         preencherCampos();
-        btnSalvar.addActionListener(evt -> salvar());
-        btnCancelar.addActionListener(evt -> dispose());
+        setLocationRelativeTo(null);
+        setVisible(true);
     }
 
     // a tela nao tem labels, entao o tooltip mostra o que e cada campo
@@ -65,36 +67,23 @@ public class TelaEdicaoUsuario extends javax.swing.JFrame {
     }
 
     private void salvar() {
-        String nome = txtNome.getText();
-        String cpf = txtCpf.getText();
-
-        if (!ValidadorUsuario.camposPreenchidos(nome, cpf)) {
-            JOptionPane.showMessageDialog(this, "Nome e CPF sao obrigatorios.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (!ValidadorUsuario.cpfValido(cpf)) {
-            JOptionPane.showMessageDialog(this, "CPF invalido.", "Erro", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        usuario.setNome(nome);
-        usuario.setCpf(cpf);
+        usuario.setNome(txtNome.getText());
+        usuario.setCpf(txtCpf.getText());
         usuario.setDataNascimento(txtDataNascimento.getText());
         usuario.setTelefone(txtTelefone.getText());
         usuario.setEmail(txtEmail.getText());
         usuario.setGenero(cbGenero.getSelectedItem().toString());
 
         try {
-            service.atualizar(usuario);
-            JOptionPane.showMessageDialog(this, "Usuario atualizado com sucesso!");
-            if (aoSalvar != null) {
-                aoSalvar.run();
-            }
-            dispose();
+            controller.atualizar(usuario);
+            JOptionPane.showMessageDialog(this, "Usuário atualizado com sucesso!");
+            aoSalvar.run();
+            setVisible(false);
+        } catch (UsuarioInvalidoException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         } catch (PersistenciaException ex) {
             logger.log(java.util.logging.Level.SEVERE, "Erro ao atualizar usuario", ex);
-            JOptionPane.showMessageDialog(this, "Nao foi possivel salvar as alteracoes.\n" + ex.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -190,31 +179,6 @@ public class TelaEdicaoUsuario extends javax.swing.JFrame {
     private void cbGeneroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbGeneroActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_cbGeneroActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaEdicaoUsuario().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancelar;

@@ -8,7 +8,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>26</maven.compiler.release>
-        <exec.mainClass>com.mycompany.prg03rainunesnovaes.Prg03rainunesnovaes</exec.mainClass>
+        <exec.mainClass>br.com.ifba.Main</exec.mainClass>
     </properties>
     <dependencies>
         <dependency>

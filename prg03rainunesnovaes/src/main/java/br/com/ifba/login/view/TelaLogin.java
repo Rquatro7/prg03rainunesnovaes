@@ -5,9 +5,9 @@
 package br.com.ifba.login.view;
 
 import br.com.ifba.infrastructure.exception.PersistenciaException;
-import br.com.ifba.usuario.view.TelaCadastroUsuario;
+import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
-import br.com.ifba.usuario.service.UsuarioService;
+import br.com.ifba.usuario.view.TelaCadastroUsuario;
 import br.com.ifba.usuario.view.TelaListagemUsuario;
 import javax.swing.JOptionPane;
 /**
@@ -18,11 +18,20 @@ public class TelaLogin extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLogin.class.getName());
 
+    private final UsuarioIController controller;
+    private final TelaListagemUsuario telaListagem;
+    private final TelaCadastroUsuario telaCadastro;
+
     /**
      * Creates new form TelaLogin
      */
-    public TelaLogin() {
+    public TelaLogin(UsuarioIController controller, TelaListagemUsuario telaListagem,
+            TelaCadastroUsuario telaCadastro) {
         initComponents();
+        this.controller = controller;
+        this.telaListagem = telaListagem;
+        this.telaCadastro = telaCadastro;
+        setLocationRelativeTo(null);
     }
 
     /**
@@ -132,68 +141,34 @@ public class TelaLogin extends javax.swing.JFrame {
 
     private void btnEntrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEntrarActionPerformed
         // 1. captura o que foi digitado nos campos
-    String loginDigitado = txtLogin.getText();
-    String senhaDigitada = new String(txtSenha.getPassword());
+        String loginDigitado = txtLogin.getText();
+        String senhaDigitada = new String(txtSenha.getPassword());
 
-    // 2. pede para a service conferir login e senha no banco
-    try {
-        if (new UsuarioService().autenticar(loginDigitado, senhaDigitada)) {
-            JOptionPane.showMessageDialog(this, "Acesso liberado!");
-            new TelaListagemUsuario().setVisible(true);
-            this.dispose();
-        } else {
-            lblResultado.setText("Senha incorreta.");
-            JOptionPane.showMessageDialog(this, "Acesso negado.", "Erro", JOptionPane.ERROR_MESSAGE);
+        // 2. pede para o controller conferir login e senha no banco
+        try {
+            if (controller.autenticar(loginDigitado, senhaDigitada)) {
+                JOptionPane.showMessageDialog(this, "Acesso liberado!");
+                telaListagem.abrir();
+                this.dispose();
+            } else {
+                lblResultado.setText("Senha incorreta.");
+                JOptionPane.showMessageDialog(this, "Acesso negado.", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (UsuarioNaoEncontradoException ex) {
+            // 3. login que nao existe chega aqui como excecao, e a mensagem vai para o usuario
+            lblResultado.setText("Login nao cadastrado.");
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch (PersistenciaException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao autenticar", ex);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (UsuarioNaoEncontradoException ex) {
-        // 3. login que nao existe chega aqui como excecao, e a mensagem vai para o usuario
-        lblResultado.setText("Login nao cadastrado.");
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-    } catch (PersistenciaException ex) {
-        logger.log(java.util.logging.Level.SEVERE, "Erro ao autenticar", ex);
-        JOptionPane.showMessageDialog(this, "Nao foi possivel acessar o banco.\n" + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-    }
     }//GEN-LAST:event_btnEntrarActionPerformed
 
     private void jLabel6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jLabel6MouseClicked
-        TelaCadastroUsuario telaCadastro = new TelaCadastroUsuario();
-        telaCadastro.setVisible(true);
-        this.dispose();
+        // abre o cadastro e, quando ele fechar, o login volta a aparecer
+        telaCadastro.abrir(() -> { }, () -> setVisible(true));
+        setVisible(false);
     }//GEN-LAST:event_jLabel6MouseClicked
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        // aplica as migrations do Flyway antes de abrir a primeira tela
-        try {
-            br.com.ifba.infrastructure.util.MigracaoBanco.migrar();
-        } catch (RuntimeException ex) {
-            logger.log(java.util.logging.Level.SEVERE, "Erro ao aplicar as migrations", ex);
-            JOptionPane.showMessageDialog(null, "Nao foi possivel atualizar o banco de dados.\n" + ex.getMessage(),
-                    "Erro", JOptionPane.ERROR_MESSAGE);
-        }
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new TelaLogin().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnEntrar;
