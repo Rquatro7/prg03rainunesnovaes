@@ -4,19 +4,97 @@
  */
 package br.com.ifba.usuario.view;
 
+import br.com.ifba.usuario.entity.Usuario;
+import br.com.ifba.usuario.service.UsuarioService;
+import br.com.ifba.usuario.validar.ValidadorUsuario;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author rainu
  */
 public class TelaEdicaoUsuario extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaEdicaoUsuario.class.getName());
+
+    private final UsuarioService service = new UsuarioService();
+    private Usuario usuario;
+    private Runnable aoSalvar; // avisa a listagem para recarregar depois de salvar
 
     /**
      * Creates new form TelaEdicaoUsuario
      */
     public TelaEdicaoUsuario() {
         initComponents();
+    }
+
+    // abre a tela ja com os dados do usuario vindos do banco
+    // se o id nao existir mais, o service lanca UsuarioNaoEncontradoException para quem abriu a tela
+    public TelaEdicaoUsuario(Long id, Runnable aoSalvar) {
+        initComponents();
+        this.aoSalvar = aoSalvar;
+        this.usuario = service.buscarPorId(id);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Editar usuario");
+        configurarCampos();
+        preencherCampos();
+        btnSalvar.addActionListener(evt -> salvar());
+        btnCancelar.addActionListener(evt -> dispose());
+    }
+
+    // a tela nao tem labels, entao o tooltip mostra o que e cada campo
+    private void configurarCampos() {
+        txtNome.setToolTipText("Nome completo");
+        txtCpf.setToolTipText("CPF");
+        txtDataNascimento.setToolTipText("Data de nascimento");
+        txtTelefone.setToolTipText("Telefone");
+        txtEmail.setToolTipText("Email");
+        cbGenero.setToolTipText("Genero");
+    }
+
+    private void preencherCampos() {
+        txtNome.setText(usuario.getNome());
+        txtCpf.setText(usuario.getCpf());
+        txtDataNascimento.setText(usuario.getDataNascimento());
+        txtTelefone.setText(usuario.getTelefone());
+        txtEmail.setText(usuario.getEmail());
+        if (usuario.getGenero() != null) {
+            cbGenero.setSelectedItem(usuario.getGenero());
+        }
+    }
+
+    private void salvar() {
+        String nome = txtNome.getText();
+        String cpf = txtCpf.getText();
+
+        if (!ValidadorUsuario.camposPreenchidos(nome, cpf)) {
+            JOptionPane.showMessageDialog(this, "Nome e CPF sao obrigatorios.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (!ValidadorUsuario.cpfValido(cpf)) {
+            JOptionPane.showMessageDialog(this, "CPF invalido.", "Erro", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        usuario.setNome(nome);
+        usuario.setCpf(cpf);
+        usuario.setDataNascimento(txtDataNascimento.getText());
+        usuario.setTelefone(txtTelefone.getText());
+        usuario.setEmail(txtEmail.getText());
+        usuario.setGenero(cbGenero.getSelectedItem().toString());
+
+        try {
+            service.atualizar(usuario);
+            JOptionPane.showMessageDialog(this, "Usuario atualizado com sucesso!");
+            if (aoSalvar != null) {
+                aoSalvar.run();
+            }
+            dispose();
+        } catch (RuntimeException ex) {
+            logger.log(java.util.logging.Level.SEVERE, "Erro ao atualizar usuario", ex);
+            JOptionPane.showMessageDialog(this, "Nao foi possivel salvar as alteracoes.\n" + ex.getMessage(),
+                    "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**

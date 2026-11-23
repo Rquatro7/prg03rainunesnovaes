@@ -1,5 +1,6 @@
 package br.com.ifba.usuario.entity;
 
+import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,11 +34,16 @@ public class RepositorioUsuarioEmMemoria {
                 return usuario;
             }
         }
-        return null;
+        throw new UsuarioNaoEncontradoException(login);
     }
 
     // busca usando o map (Task 03, segunda forma) - e o metodo oficial do repositorio
+    // antes devolvia null quando nao achava, agora lanca a excecao no lugar onde o problema aparece
     public Usuario buscarPorLogin(String login) {
-        return porLogin.get(login);
+        Usuario usuario = porLogin.get(login);
+        if (usuario == null) {
+            throw new UsuarioNaoEncontradoException(login);
+        }
+        return usuario;
     }
 }
