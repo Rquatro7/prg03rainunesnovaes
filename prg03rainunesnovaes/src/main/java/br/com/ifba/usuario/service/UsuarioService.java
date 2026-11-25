@@ -1,5 +1,6 @@
 package br.com.ifba.usuario.service;
 
+import org.springframework.stereotype.Service;
 import br.com.ifba.usuario.dao.UsuarioIDao;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.LoginDuplicadoException;
@@ -8,6 +9,7 @@ import br.com.ifba.usuario.validar.ValidadorUsuario;
 import java.util.List;
 
 // regras de negocio do usuario. As validacoes que antes ficavam no botao da tela vieram para ca
+@Service
 public class UsuarioService implements UsuarioIService {
 
     private final UsuarioIDao dao;

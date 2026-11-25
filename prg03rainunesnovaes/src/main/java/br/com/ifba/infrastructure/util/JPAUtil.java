@@ -20,7 +20,8 @@ public class JPAUtil {
         if (fabrica == null || !fabrica.isOpen()) {
             // as migrations rodam antes, porque com validate o Hibernate so confere as tabelas
             MigracaoBanco.migrar();
-            fabrica = Persistence.createEntityManagerFactory(UNIDADE_PERSISTENCIA);
+            fabrica = Persistence.createEntityManagerFactory(UNIDADE_PERSISTENCIA,
+                    ConfiguracaoConexao.lerDoApplicationProperties().paraHibernate());
         }
         return fabrica.createEntityManager();
     }
