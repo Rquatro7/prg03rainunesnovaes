@@ -4,6 +4,7 @@
  */
 package br.com.ifba.login.view;
 
+import org.springframework.stereotype.Component;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
@@ -14,6 +15,7 @@ import javax.swing.JOptionPane;
  *
  * @author rainu
  */
+@Component
 public class TelaLogin extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLogin.class.getName());

@@ -16,7 +16,7 @@ public class MigracaoBanco {
         if (jaMigrou) {
             return;
         }
-        ConfiguracaoConexao conexao = ConfiguracaoConexao.lerDoPersistenceXml();
+        ConfiguracaoConexao conexao = ConfiguracaoConexao.lerDoApplicationProperties();
         Flyway.configure()
                 .dataSource(conexao.getUrl(), conexao.getUsuario(), conexao.getSenha())
                 .locations("classpath:db/migration")

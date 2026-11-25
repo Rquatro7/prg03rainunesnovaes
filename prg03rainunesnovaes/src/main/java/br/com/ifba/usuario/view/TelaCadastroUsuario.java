@@ -4,6 +4,7 @@
  */
 package br.com.ifba.usuario.view;
 
+import org.springframework.stereotype.Component;
 import br.com.ifba.infrastructure.exception.PersistenciaException;
 import br.com.ifba.usuario.controller.UsuarioIController;
 import br.com.ifba.usuario.entity.Usuario;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
  *
  * @author rainu
  */
+@Component
 public class TelaCadastroUsuario extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaCadastroUsuario.class.getName());

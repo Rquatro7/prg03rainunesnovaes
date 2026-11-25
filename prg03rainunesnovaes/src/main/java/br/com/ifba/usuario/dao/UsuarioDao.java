@@ -1,11 +1,13 @@
 package br.com.ifba.usuario.dao;
 
+import org.springframework.stereotype.Repository;
 import br.com.ifba.infrastructure.dao.GenericDao;
 import br.com.ifba.usuario.entity.Usuario;
 import br.com.ifba.usuario.exception.UsuarioNaoEncontradoException;
 import java.util.List;
 
 // dao do usuario: herda o CRUD do GenericDao e implementa as buscas com JPQL
+@Repository
 public class UsuarioDao extends GenericDao<Usuario> implements UsuarioIDao {
 
     public UsuarioDao() {
